@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Sukigram — Le réseau social des animaux{% endblock %}</title>
+        
+        {# Appel du CSS #}
+        <link rel="stylesheet" href="{{ asset('css/style.css') }}">
+        
+        {% block stylesheets %}{% endblock %}
+        {% block javascripts %}{% endblock %}
+    </head>
+    <body>
+        <nav>
+            <a href="{{ path('app_home') }}" style="font-size: 1.2rem;">🟣 Sukigram</a>
+            <a href="{{ path('app_home') }}">Accueil</a>
+            <a href="{{ path('app_post_new') }}">Nouveau Post</a>
+        </nav>
+
+        <div class="container">
+            {# Zone des messages flash (succès/erreur) #}
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {# Contenu des pages #}
+            {% block body %}{% endblock %}
+        </div>
+
+        <footer style="text-align: center; margin-top: 50px; padding: 20px; color: #6b7280;">
+            <p>&copy; {{ "now"|date("Y") }} Sukigram — Évaluation Jour 1</p>
+        </footer>
+    </body>
+</html>

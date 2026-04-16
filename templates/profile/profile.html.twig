@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello, {{ user.username }}.{% endblock %}
+
+{% block body %}
+<div class="container">
+
+    <header class="profile-header">
+        <h1>@{{ user.username }}</h1>
+        
+        {% if user.avatarUrl %}
+            <img src="{{ user.avatarUrl }}" alt="Avatar" style="width: 100px; border-radius: 50%;">
+        {% else %}
+            <div class="default-avatar" style="width: 100px; height: 100px; background: #ccc; border-radius: 50%; display: inline-block;"></div>
+        {% endif %}
+
+        <p class="bio">
+            <strong>Bio :</strong> 
+            {{ user.bio ?: "Cet utilisateur n'a pas encore de bio." }}
+        </p>
+        <p><small>Membre depuis le : {{ user.createdAt|date('d/m/Y') }}</small></p>
+    </header>
+
+    <hr>
+
+
+    <section class="user-posts">
+        <h2>Publications ({{ user.posts|length }})</h2>
+
+        {% if user.posts is empty %}
+            <p>Cet utilisateur n'a encore rien publié.</p>
+        {% else %}
+           
+            {% for post in user.posts|sort((a, b) => b.createdAt <=> a.createdAt) %}
+                <article class="post" style="border: 1px solid #eee; padding: 10px; margin-bottom: 10px;">
+                    <p>{{ post.context }}</p>
+                    <small>Publié le {{ post.createdAt|date('d/m/Y à H:i') }}</small>
+                </article>
+            {% endfor %}
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
