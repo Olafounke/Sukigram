@@ -18,3 +18,23 @@
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> IDE & OS  ###
+.idea/
+.vscode/
+bin/.phpunit
+.phpunit.result.cache
+Thumbs.db
+desktop.ini
+.DS_Store
+###< IDE & OS ###
+
+###> Docker ###
+docker-compose.override.yml
+###< Docker ###
+
+###> Divers ###
+/node_modules/
+npm-debug.log
+yarn-error.log
+###< Divers ###
