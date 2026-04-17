@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Page principale de Sukigram.{% endblock %}
+
+{% block body %}
+
+    <h1>Derniers posts</h1>
+    {% for post in posts %}
+        <article class="post">
+        <p>{{ post.context }}</p>
+        <small>
+            <span class="post-author">@{{ post.author.username }}</span>
+            <span class="post-date">{{ post.createdAt|date('d M Y, H:i') }}</span>
+        </small>
+        </article>
+        <hr>
+        
+    {% endfor %}
+{% endblock %}

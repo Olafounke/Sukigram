@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Publications.{% endblock %}
+
+{% block body %}
+    <div class="form-wrapper">
+        <h1>Créez votre premier post</h1>
+        
+        <div style="width: 100%; max-width: 500px;">
+            {{ form_start(postForm) }}
+                {{ form_widget(postForm) }}
+                <button type="submit" class="btn-publish">Publier</button>
+            {{ form_end(postForm) }}
+        </div>
+    </div>
+{% endblock %}
