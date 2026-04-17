@@ -40,4 +40,16 @@ class PostRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findFeedForUser($user): array
+    {
+        return $this->createQueryBuilder('p')
+            ->join('p.author', 'u')
+            ->join('u.followers', 'f')
+            ->andWhere('f = :user')
+            ->setParameter('user', $user)
+            ->orderBy('p.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

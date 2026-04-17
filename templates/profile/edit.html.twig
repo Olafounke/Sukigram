@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier mon profil — Sukigram{% endblock %}
+
+{% block body %}
+<div class="form-wrapper" style="max-width: 600px; margin: 40px auto;">
+    <div style="background: white; padding: 40px; border-radius: 20px; box-shadow: var(--shadow);">
+        <h1 style="color: var(--primary-dark); margin-bottom: 20px;">Paramètres du profil ⚙️</h1>
+
+       
+        {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            
+            <div style="margin-bottom: 20px;">
+                {{ form_row(form.username) }}
+            </div>
+            <div style="margin-bottom: 20px;">
+                {{ form_row(form.email) }}
+            </div>
+            <div style="margin-bottom: 20px;">
+                {{ form_row(form.bio) }}
+            </div>
+            <div style="margin-bottom: 30px; border: 2px dashed var(--primary-light); padding: 15px; border-radius: 10px;">
+                <label style="font-weight: bold; display: block; margin-bottom: 10px;">📸</label>
+                {{ form_widget(form.avatarUrl) }}
+            </div>
+
+            <button type="submit" class="btn-publish" style="width: 100%;">Valider</button>
+        {{ form_end(form) }}
+        
+        <p style="text-align: center; margin-top: 20px;">
+            <a href="{{ path('app_profile', {username: app.user.username}) }}" style="color: var(--text-muted);">Annuler</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

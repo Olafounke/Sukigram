@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chat avec {{ conversation.participants|filter(p => p != app.user)|map(p => '@' ~ p.username)|join(', ') }}{% endblock %}
+
+{% block body %}
+<div style="max-width: 700px; margin: 20px auto;">
+    
+    <div style="display: flex; align-items: center; gap: 15px; margin-bottom: 20px;">
+        <a href="{{ path('app_messages') }}" style="text-decoration: none; font-size: 1.5rem; color: var(--text-main);">←</a>
+        <h2 style="margin: 0;">Discussion avec 
+            <span style="color: var(--primary-color);">
+                {{ conversation.participants|filter(p => p != app.user)|map(p => '@' ~ p.username)|join(', ') }}
+            </span>
+        </h2>
+    </div>
+
+
+    <div id="chat-box" style="background: white; border-radius: 20px; padding: 25px; height: 500px; overflow-y: auto; box-shadow: var(--shadow); display: flex; flex-direction: column; gap: 15px;">
+        {% for message in conversation.messages %}
+            {% set isMe = (message.sender == app.user) %}
+            
+            <div style="display: flex; flex-direction: column; align-items: {{ isMe ? 'flex-end' : 'flex-start' }};">
+                <div style="
+                    max-width: 70% ;
+                    padding: 12px 18px;
+                    border-radius: 18px;
+                    font-size: 1rem;
+                    line-height: 1.4;
+                    background: {{ isMe ? 'var(--primary-color)' : '#f1f5f9' }};
+                    color: {{ isMe ? 'white' : '#1e293b' }};
+                    border-bottom-{{ isMe ? 'right' : 'left' }}-radius: 2px;
+                ">
+                    {% if message.imageUrl %}
+                        <img src="{{ asset('uploads/images/' ~ message.imageUrl) }}" style="max-width: 100%; border-radius: 10px; margin-bottom: 10px; display: block;">
+                    {% endif %}
+                    {{ message.content }}
+                </div>
+                <small style="font-size: 0.75rem; color: var(--text-muted); margin-top: 5px;">
+                    {{ message.createdAt|date('H:i') }}
+                </small>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <div style="margin-top: 20px;">
+        <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 10px; background: white; padding: 15px; border-radius: 20px; box-shadow: var(--shadow);">
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" name="content" autocomplete="off" placeholder="Écrivez votre message..." 
+                       style="flex-grow: 1; border: 1px solid #eee; padding: 10px 20px; border-radius: 25px; outline: none; font-size: 1rem;">
+                
+                <label style="cursor: pointer; background: #f1f5f9; padding: 10px; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;" title="Envoyer une image">
+                    📷
+                    <input type="file" name="image" style="display: none;" accept="image/*">
+                </label>
+
+                <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 10px 25px; border-radius: 25px; cursor: pointer; font-weight: bold;">
+                    Envoyer
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    chatBox.scrollTop = chatBox.scrollHeight;
+</script>
+{% endblock %}

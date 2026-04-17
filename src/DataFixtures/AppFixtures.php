@@ -2,6 +2,8 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Conversation;
+use App\Entity\Message;
 use App\Entity\Post;
 use App\Entity\User;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -15,48 +17,49 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $users = [];
+        $names = ['Suki', 'Lucky', 'Nala', 'Simba', 'Baya'];
 
-        for ($i = 1; $i <= 5; $i++) {
+   
+        foreach ($names as $name) {
             $user = new User();
-            $user->setEmail("user$i@test.com")
-                 ->setUsername("user$i")
-                 ->setBio("Ma super bio d'animal n°$i");
+            $user->setEmail(strtolower($name) . "@test.com")
+                 ->setUsername($name)
+                 ->setBio("Je suis un petit animal nommé $name 🐾")
+                 ->setPassword($this->hasher->hashPassword($user, 'password'));
             
-
-            $password = $this->hasher->hashPassword($user, 'password');
-            $user->setPassword($password);
-
             $manager->persist($user);
             $users[] = $user;
-
-
-            $allPosts = [];
-            foreach ($users as $index => $user) {
-                for ($j = 1; $j <= 3; $j++) {
-                    $post = new Post();
-                    $post->setContext("Wouf ! Voici mon post n°$j (par " . $user->getUsername() . ")")
-                        ->setAuthor($user);
-                    
-                    $manager->persist($post);
-                    $allPosts[] = $post;
-                }
-            }
-
-       
-            foreach ($users as $user) {
-
-                $nextUser = $users[($i + 1) % 5];
-                if ($user !== $nextUser) {
-                    $user->addFollowing($nextUser);
-                }
-
-                for ($k = 0; $k < 2; $k++) {
-                    $randomPost = $allPosts[array_rand($allPosts)];
-                    $randomPost->addLikedBy($user);
-                }
-            }
-
-            $manager->flush();
         }
+
+     
+        foreach ($users as $user) {
+            for ($i = 1; $i <= 2; $i++) {
+                $post = new Post();
+                $post->setContext("Coucou ! C'est le post n°$i de " . $user->getUsername())
+                     ->setAuthor($user);
+                $manager->persist($post);
+            }
+        }
+
+    
+        $conv = new Conversation();
+        $conv->addParticipant($users[0]);
+        $conv->addParticipant($users[1]);
+        $manager->persist($conv);
+
+   
+        $texts = ["Salut !", "Coucou ça va ?", "Oui et toi ?", "Super, tu as vu mon dernier post ?"];
+        foreach ($texts as $index => $text) {
+            $msg = new Message();
+            $msg->setContent($text)
+                ->setSender($index % 2 == 0 ? $users[0] : $users[1])
+                ->setConversation($conv)
+                ->setCreatedAt(new \DateTimeImmutable("-" . (10 - $index) . " minutes"))
+                ->setIsRead(true);
+            
+            $manager->persist($msg);
+        }
+
+        $manager->flush();
     }
 }

@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes Discussions — Sukigram{% endblock %}
+
+{% block body %}
+<div style="max-width: 600px; margin: 40px auto;">
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1 style="color: var(--primary-dark); margin: 0;">Messages 💬</h1>
+        <button onclick="document.getElementById('groupForm').style.display = 'block'" style="background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 20px; cursor: pointer; font-weight: bold;">
+            + Nouveau Groupe
+        </button>
+    </div>
+
+    
+    <div id="groupForm" style="display: none; background: white; padding: 20px; border-radius: 15px; box-shadow: var(--shadow); margin-bottom: 30px; border: 1px solid var(--primary-light);">
+        <h3 style="margin-top: 0; color: var(--primary-color);">Créer un groupe de discussion</h3>
+        <form action="{{ path('app_conversation_group_new') }}" method="post">
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Nom du groupe :</label>
+                <input type="text" name="name" placeholder="Ex: Les Amis de Suki" required style="width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #ddd; outline: none;">
+            </div>
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Sélectionner les participants :</label>
+                <div style="max-height: 150px; overflow-y: auto; border: 1px solid #eee; padding: 10px; border-radius: 10px;">
+                    {% for user in users|filter(u => u != app.user) %}
+                        <div style="margin-bottom: 5px;">
+                            <label style="cursor: pointer;">
+                                <input type="checkbox" name="participants[]" value="{{ user.id }}"> @{{ user.username }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <button type="submit" style="background: var(--primary-color); color: white; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Créer le groupe</button>
+                <button type="button" onclick="document.getElementById('groupForm').style.display = 'none'" style="background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 10px; cursor: pointer;">Annuler</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="conversation-list">
+        {% for conversation in conversations %}
+            {# Si c'est un groupe (nom présent), on affiche le nom, sinon le destinataire #}
+            {% set title = conversation.name ? conversation.name : (conversation.participants|filter(p => p != app.user)|first).username %}
+            {% set isGroup = conversation.name is not empty %}
+            
+            <a href="{{ path('app_chat', {id: conversation.id}) }}" style="text-decoration: none; color: inherit;">
+                <div class="post" style="display: flex; align-items: center; gap: 20px; padding: 20px; background: white; border-radius: 15px; margin-bottom: 15px; transition: transform 0.2s; box-shadow: var(--shadow);">
+                    
+                    
+                    <div style="width: 55px; height: 55px; background: {{ isGroup ? 'var(--secondary-color)' : 'var(--primary-light)' }}; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem;">
+                        {{ isGroup ? '👥' : title|first|upper }}
+                    </div>
+
+                    <div style="flex-grow: 1;">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <strong style="font-size: 1.1rem; color: var(--text-main);">
+                                {{ isGroup ? 'Group: ' ~ title : '@' ~ title }}
+                            </strong>
+                            {% if conversation.messages|length > 0 %}
+                                <small style="color: var(--text-muted);">{{ conversation.messages|last.createdAt|date('H:i') }}</small>
+                            {% endif %}
+                        </div>
+                        <p style="margin: 5px 0 0; color: var(--text-muted); font-size: 0.9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            {% if conversation.messages|length > 0 %}
+                                <strong>{{ conversation.messages|last.sender.username }}:</strong> {{ conversation.messages|last.content }}
+                            {% else %}
+                                Aucune discussion encore...
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </a>
+        {% else %}
+            <div style="text-align: center; padding: 50px; background: white; border-radius: 20px; color: var(--text-muted);">
+                <p style="font-size: 1.2rem;">Pas encore de messages. 🐾</p>
+                <a href="{{ path('app_home') }}" style="color: var(--primary-color); font-weight: bold;">Lancer une discussion</a>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

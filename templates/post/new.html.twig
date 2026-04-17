@@ -1,16 +1,24 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Publications.{% endblock %}
+{% block title %}Nouveau Post — Sukigram{% endblock %}
 
 {% block body %}
-    <div class="form-wrapper">
-        <h1>Créez votre premier post</h1>
-        
-        <div style="width: 100%; max-width: 500px;">
-            {{ form_start(postForm) }}
-                {{ form_widget(postForm) }}
-                <button type="submit" class="btn-publish">Publier</button>
-            {{ form_end(postForm) }}
-        </div>
+<div class="form-wrapper" style="max-width: 600px; margin: 40px auto;">
+    <h1>Partager un moment 🐾</h1>
+    
+    <div style="background: white; padding: 30px; border-radius: 16px; box-shadow: var(--shadow);">
+        {{ form_start(postForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
+            <div style="margin-bottom: 20px;">
+                {{ form_row(postForm.context, {'label': 'Légende'}) }}
+            </div>
+            
+            <div style="margin-bottom: 20px; background: #f9fafb; padding: 15px; border-radius: 10px;">
+                <label style="font-weight: bold;">📷</label>
+                {{ form_widget(postForm.image) }}
+            </div>
+
+            <button type="submit" class="btn-publish" style="width: 100%;">Publier</button>
+        {{ form_end(postForm) }}
     </div>
+</div>
 {% endblock %}

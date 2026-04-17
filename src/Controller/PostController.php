@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Form\PostType;
+use App\Service\FileUploader;
 use App\Repository\UserRepository;
 use App\Repository\PostRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -11,62 +12,58 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 final class PostController extends AbstractController
 {
 
     #[Route('/post/new', name: 'app_post_new')]
-    public function new(Request $request, EntityManagerInterface $em, UserRepository $userRepo): Response
-        {
+    public function new(Request $request, EntityManagerInterface $em, FileUploader $fileUploader): Response
+    {
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
-    if ($form->isSubmitted() && $form->isValid()) {
-        
-        $tempUser = $userRepo->findAll()[0]; 
-        $post->setAuthor($this->getUser());
+        if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('image')->getData();
+            if ($imageFile) {
+                $post->setImageUrl($fileUploader->upload($imageFile));
+            }
 
-        $em->persist($post);
-        $em->flush();
+            $post->setAuthor($this->getUser());
 
-        $this->addFlash('success', 'Votre post a été publié !');
-        return $this->redirectToRoute('app_home');
-    }
+            $em->persist($post);
+            $em->flush();
 
-    return $this->render('post/new.html.twig', [
-        'postForm' => $form->createView(),
-    ]);
-}
-    #[Route('/feed', name: 'app_post_feed')]
-    #[IsGranted('ROLE_USER')] 
-    public function feed(PostRepository $postRepository): Response
-    {
-    /** @var User $user */
-        $user = $this->getUser();
-        $following = $user->getFollowing();
+            // $cache->delete('user_feed_' . $this->getUser()->getId());
 
-    if ($following->isEmpty()) {
-        return $this->render('post/feed.html.twig', [
-            'posts' => [],
-            'message' => 'Vous ne suivez encore personne. Explorez les profils pour voir du contenu ici !'
+            $this->addFlash('success', 'Votre post a été publié !');
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render('post/new.html.twig', [
+            'postForm' => $form->createView(),
         ]);
     }
 
-    $posts = $postRepository->findBy(
-        ['author' => $following->toArray()],
-        ['createdAt' => 'DESC']
-    );
+    #[Route('/feed', name: 'app_post_feed')]
+    public function feed(PostRepository $postRepository): Response
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        
+        $posts = $postRepository->findFeedForUser($user);
 
-    return $this->render('post/feed.html.twig', [
-        'posts' => $posts
-    ]);
-}
+        return $this->render('post/feed.html.twig', [
+            'posts' => $posts
+        ]);
+    }
 
     #[Route('/{id}/delete', name: 'app_post_delete', methods: ['POST', 'GET'])]
     public function delete(Post $post, EntityManagerInterface $entityManager): Response
     {
-    
         $this->denyAccessUnlessGranted('POST_DELETE', $post);
 
         $entityManager->remove($post);
@@ -75,5 +72,4 @@ final class PostController extends AbstractController
         $this->addFlash('success', 'Post supprimé avec succès.');
         return $this->redirectToRoute('app_home');
     }
-
 }

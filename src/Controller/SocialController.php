@@ -4,13 +4,15 @@ namespace App\Controller;
 
 use App\Entity\Post;
 use App\Entity\User;
+use App\Entity\Comment;
 use App\Entity\Notification;
 use App\Repository\NotificationRepository;
+use App\Repository\CommentRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 
 class SocialController extends AbstractController
 {
@@ -18,7 +20,6 @@ class SocialController extends AbstractController
     public function like(Post $post, EntityManagerInterface $em, Request $request): Response
     {
         $user = $this->getUser();
-        if (!$user) return $this->redirectToRoute('app_login');
 
         if ($post->getLikedBy()->contains($user)) {
             $post->removeLikedBy($user);
@@ -51,7 +52,6 @@ class SocialController extends AbstractController
         } else {
             $targetUser->addFollower($currentUser);
 
-       
             $notif = new Notification();
             $notif->setReceptor($targetUser);
             $notif->setSender($currentUser);
@@ -63,18 +63,76 @@ class SocialController extends AbstractController
         return $this->redirectToRoute('app_profile', ['username' => $targetUser->getUsername()]);
     }
 
+    #[Route('/post/{id}/comment', name: 'app_comment_add', methods: ['POST'])]
+    public function addComment(Post $post, Request $request, EntityManagerInterface $em): Response
+    {
+        $user = $this->getUser();
+
+        $content = $request->request->get('content');
+        if ($content) {
+            $comment = new Comment();
+            $comment->setContent($content)
+                ->setAuthor($user)
+                ->setPost($post);
+            
+            $em->persist($comment);
+            
+            if ($post->getAuthor() !== $user) {
+                $notif = new Notification();
+                $notif->setReceptor($post->getAuthor());
+                $notif->setSender($user);
+                $notif->setContent("a commenté votre post");
+                $em->persist($notif);
+            }
+
+            $em->flush();
+        }
+
+        $referer = $request->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('app_home'));
+    }
+
+    #[Route('/comment/{id}/delete', name: 'app_comment_delete')]
+    public function deleteComment(Comment $comment, EntityManagerInterface $em, Request $request): Response
+    {
+        $user = $this->getUser();
+        
+        if ($comment->getAuthor() === $user || $comment->getPost()->getAuthor() === $user) {
+            $em->remove($comment);
+            $em->flush();
+            $this->addFlash('success', 'Commentaire supprimé.');
+        }
+
+        $referer = $request->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('app_home'));
+    }
+
+    #[Route('/comment/{id}/like', name: 'app_comment_like')]
+    public function likeComment(Comment $comment, EntityManagerInterface $em, Request $request): Response
+    {
+        $user = $this->getUser();
+
+        if ($comment->getLikedBy()->contains($user)) {
+            $comment->removeLikedBy($user);
+        } else {
+            $comment->addLikedBy($user);
+        }
+
+        $em->flush();
+        $referer = $request->headers->get('referer');
+        return $this->redirect($referer ?: $this->generateUrl('app_home'));
+    }
+
     #[Route('/notifications', name: 'app_notifications')]
     public function notifications(NotificationRepository $notifRepo, EntityManagerInterface $em): Response
     {
         $user = $this->getUser();
-        if (!$user) return $this->redirectToRoute('app_login');
 
         $notifications = $notifRepo->findBy(
             ['receptor' => $user],
             ['createdAt' => 'DESC']
         );
 
-      
         foreach ($notifications as $notif) {
             $notif->setIsRead(true);
         }

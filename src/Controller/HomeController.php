@@ -18,18 +18,4 @@ final class HomeController extends AbstractController
         'posts' => $postRepository->findBy([], ['createdAt' => 'DESC'], 10),
     ]);
 }
-
-#[Route('/profile/{username}', name: 'app_profile')]
-public function profile(string $username, UserRepository $userRepository): Response
-{
-    $user = $userRepository->findOneBy(['username' => $username]);
-
-    if (!$user) {
-        throw $this->createNotFoundException("Cet utilisateur n'existe pas.");
-    }
-
-    return $this->render('profile/profile.html.twig', [
-        'user' => $user,
-    ]);
-}
 }

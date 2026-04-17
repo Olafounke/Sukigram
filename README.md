@@ -1,8 +1,8 @@
-# Sukigram
-Mini App Résaux social
+# Commentaires 
+Comme expliqué en cours aujourd'hui 17/04/2026, j'ai un problème avec mon openssl. Ce qui crée un crash de mon application du à l'environnement. Je n'ai donc pas pu débugger mon code du day 3 et m'assurer du bon fonctionnement de toutes les fonctionnalités et tests. 
 
 # Sukigram
-Mini App Résaux social
+Mini app de réseau social des animaux
 
 # Évaluation Jour 1 — Fondations de SymfoConnect
 
@@ -10,49 +10,67 @@ Mini App Résaux social
 
 ---
 
-## 🌐 Le Projet : SymfoConnect
+evaluation_jour1.md
+3 Ko
+Widad — Hier à 11:54
+Transféré
+# Évaluation Jour 2 — Fonctionnalités Sociales de SymfoConnect
 
-SymfoConnect est un réseau social développé progressivement sur 3 jours. À l'issue de la formation, vous aurez une application Symfony 7 complète et fonctionnelle.
+**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluation Jour 1 complétée
 
-### Vision globale sur les 3 jours
+---
 
-| Jour | Ce qui est construit |
-|------|---------------------|
-| **Jour 1** | Base du projet, entités, pages publiques, formulaire de post |
-| **Jour 2** | Authentification, follows, likes, fil d'actualité, sécurité |
-| **Jour 3** | Messagerie privée, API, cache, tests, déploiement |
+evaluation_jour2.md
+3 Ko
+Widad — Hier à 16:31
+Transféré
+https://discord.gg/jsWVydqE
+MathBlock
+MathBlock
+18 en ligne
+83 membres
+depuis nov. 2024
 
-### Schéma de base de données final (pour information)
+Aller sur le serveur
+Widad — Hier à 16:58
+faut signer
+Widad — 13:06
+Transféré
+# Évaluation Jour 3 — Finalisation de SymfoConnect
 
-```
-users ──< posts ──< likes (ManyToMany users)
-  │
-  └──< user_follows (ManyToMany self)
-  └──< messages (sender / recipient)
-  └──< notifications (recipient)
-```
+**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluations Jours 1 & 2 complétées
+
+---
+
+evaluation_jour3.md
+4 Ko
+﻿
+# Évaluation Jour 3 — Finalisation de SymfoConnect
+
+**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluations Jours 1 & 2 complétées
 
 ---
 
 ## 🎯 Objectifs Fonctionnels
 
-À la fin de cette évaluation, l'application doit :
+Pour finaliser SymfoConnect, l'application doit intégrer les fonctionnalités suivantes :
 
-1. **Démarrer sans erreur** — le projet Symfony 7 est installé, la base de données est configurée et les migrations sont exécutées.
+1. **Messagerie privée** — un utilisateur connecté peut envoyer un message privé à un autre utilisateur. Il dispose d'une page listant toutes ses conversations et d'une page affichant l'historique d'une conversation avec possibilité de répondre. Les messages reçus sont marqués comme lus à la lecture.
 
-2. **Afficher une page d'accueil** (`/`) — liste des 10 derniers posts, triés par date décroissante, avec le nom de l'auteur et la date de publication.
+2. **API REST** — les posts sont exposés via une API JSON paginée. Il est possible de lister tous les posts (`GET /api/posts`), consulter un post précis (`GET /api/posts/{id}`) et créer un post si l'on est authentifié (`POST /api/posts`). Une documentation interactive (Swagger UI) est accessible. Des filtres permettent de rechercher par contenu ou par auteur.
 
-3. **Afficher une page de profil** (`/profil/{username}`) — présente les informations de l'utilisateur (username, bio, avatar si renseigné) ainsi que ses posts. Retourne une erreur 404 si l'utilisateur n'existe pas.
+3. **Cache sur le fil d'actualité** — le fil d'actualité (`/feed`) utilise un cache applicatif avec une durée d'expiration de 5 minutes. Le cache est invalidé dès qu'un nouveau post est créé.
 
-4. **Permettre la création d'un post** (`/post/nouveau`) — formulaire avec validation (contenu obligatoire, longueur minimale). Après soumission valide, le post est sauvegardé, un message flash confirme la création et l'utilisateur est redirigé vers l'accueil.
+4. **Traitement asynchrone** — lors de l'envoi d'un message privé, une notification par email est envoyée au destinataire de manière asynchrone via le composant Messenger (le worker peut être lancé manuellement pour vérifier).
 
-5. **Avoir un layout cohérent** — toutes les pages héritent d'un template de base avec navigation et zone d'affichage des messages flash.
+5. **Tests automatisés** — le projet comporte au minimum 5 tests qui passent tous en vert :
+   - 1 test unitaire sur une règle métier (entité ou service)
+   - 1 test fonctionnel vérifiant qu'une page publique répond en 200
+   - 1 test fonctionnel vérifiant que la création de post redirige vers `/login` si non connecté
+   - 1 test fonctionnel vérifiant qu'un utilisateur connecté peut accéder au formulaire de post
+   - 1 test fonctionnel sur l'API (`GET /api/posts` retourne du JSON valide)
 
-### Entités attendues
-
-**User** — id, email (unique), username (unique), password, bio (nullable), avatarUrl (nullable), createdAt
-
-**Post** — id, content, createdAt, author (ManyToOne → User)
+6. **Configuration de production** — le projet contient un fichier `.env.prod.local.example` avec les variables nécessaires à un déploiement (BDD, mailer, secret, debug=0) et un script `deploy.sh` listant les commandes à exécuter lors d'un déploiement (installation des dépendances, migrations, warmup du cache, compilation des assets).
 
 ---
 
@@ -60,13 +78,30 @@ users ──< posts ──< likes (ManyToMany users)
 
 | Critère | Points |
 |---------|--------|
-| Projet installé, BDD configurée, migrations sans erreur | 3 |
-| Entité User : tous les champs, types corrects | 2 |
-| Entité Post + relation ManyToOne vers User correcte | 2 |
-| Page d'accueil fonctionnelle (liste, tri, auteur, date) | 4 |
-| Page de profil fonctionnelle (infos user, ses posts, 404) | 3 |
-| Formulaire de post avec validation, flash et redirection | 4 |
-| Qualité du code (lisibilité, conventions PSR-12) | 2 |
+| Messagerie privée (liste conversations, affichage, envoi, marquage lu) | 6 |
+| API REST (liste, détail, création, filtres, documentation) | 4 |
+| Cache sur le fil d'actualité avec invalidation | 2 |
+| Messenger : email asynchrone au destinataire d'un message | 3 |
+| 5 tests passant en vert | 4 |
+| Fichiers de configuration de production présents et cohérents | 1 |
+
+---
+
+## 🎓 Bilan du Projet
+
+À l'issue des 3 jours, SymfoConnect couvre :
+
+| Fonctionnalité | Jour |
+|----------------|------|
+| Structure du projet, routing, templates | J1 |
+| Entités User et Post, migrations, CRUD | J1 |
+| Pages publiques (accueil, profil), formulaires | J1 |
+| Inscription, connexion, déconnexion | J2 |
+| Follows, likes, fil d'actualité | J2 |
+| Voters, notifications, EventSubscriber | J2 |
+| Messagerie privée | J3 |
+| API REST avec API Platform | J3 |
+| Cache, Messenger, tests, déploiement | J3 |
 
 ---
 
@@ -76,4 +111,4 @@ Dossier du projet zippé ou lien vers dépôt Git.
 
 ---
 
-*Bon courage ! 💪*
+*Félicitations pour ces 3 jours ! 🎉*

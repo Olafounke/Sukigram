@@ -23,4 +23,10 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
 
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            # App\Message\MessageNotification: async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                async: 'sync://'

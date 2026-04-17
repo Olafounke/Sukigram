@@ -23,7 +23,7 @@ class PostVoter extends Voter
 
         /** @var Post $post */
         $post = $subject;
-
+        
         return $post->getAuthor() === $user;
     }
 }

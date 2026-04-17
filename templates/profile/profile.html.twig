@@ -7,8 +7,7 @@
 
   
     <header class="profile-header" style="text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 30px; border-bottom: 5px solid var(--primary-color);">
-        
-        {# Avatar #}
+      
         <div style="margin-bottom: 20px;">
             {% if user.avatarUrl %}
                 <img src="{{ user.avatarUrl }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-light);">
@@ -25,6 +24,9 @@
             {{ user.bio ?: "Cet utilisateur n'a pas encore de bio. 🐾" }}
         </p>
 
+        {% if app.user == user %}
+            <a href="{{ path('app_profile_edit') }}" style="margin-top: 10px; color: var(--text-muted); text-decoration: none; font-size: 0.9rem;">⚙️ Modifier le profil</a>
+        {% endif %}
         
         <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 20px;">
             <div style="text-align: center;">
@@ -50,7 +52,16 @@
                 {% else %}
                     👤 S'abonner
                 {% endif %}
+    
             </a>
+        {% endif %}
+
+        {% if app.user and app.user != user %}
+            <form action="{{ path('app_conversation_start', {id: user.id}) }}" method="post" style="display: inline-block;">
+                <button type="submit" style="background: white; color: var(--primary-color); margin-top: 10px; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: bold;">
+                    ✉️ Message
+                </button>
+            </form>
         {% endif %}
     </header>
 
