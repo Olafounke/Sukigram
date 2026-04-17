@@ -1,0 +1,21 @@
+# Ne pas copier les dossiers lourds (Docker fera son propre install)
+vendor/
+var/
+node_modules/
+.git/
+
+# Ne pas copier les fichiers système
+.idea/
+.vscode/
+Thumbs.db
+.DS_Store
+
+# Ne pas copier les fichiers de config locale 
+# Sauf si tu as besoin d'un .env de base (comme vu précédemment)
+.env.local
+.env.test.local
+
+# Documentation
+README.md
+docker-compose.yml
+docker-compose.override.yml

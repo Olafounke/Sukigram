@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inscription — Sukigram{% endblock %}
+
+{% block body %}
+<div style="max-width: 500px; margin: 60px auto;">
+    <div style="background: white; padding: 40px; border-radius: 16px; box-shadow: var(--shadow);">
+        
+        <h1 style="font-size: 1.8rem; margin-bottom: 30px; color: var(--primary-dark);">Créer un compte</h1>
+
+        {{ form_errors(registrationForm) }}
+
+        {{ form_start(registrationForm) }}
+            <div style="margin-bottom: 20px;">
+                {{ form_label(registrationForm.username, null, {'label_attr': {'style': 'display:block; margin-bottom:8px; font-weight:600;'}}) }}
+                {{ form_widget(registrationForm.username, {'attr': {'style': 'width:100%; padding:12px; border:1.5px solid #e5e7eb; border-radius:8px;'}}) }}
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                {{ form_label(registrationForm.email, null, {'label_attr': {'style': 'display:block; margin-bottom:8px; font-weight:600;'}}) }}
+                {{ form_widget(registrationForm.email, {'attr': {'style': 'width:100%; padding:12px; border:1.5px solid #e5e7eb; border-radius:8px;'}}) }}
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                {{ form_label(registrationForm.plainPassword, null, {'label_attr': {'style': 'display:block; margin-bottom:8px; font-weight:600;'}}) }}
+                {{ form_widget(registrationForm.plainPassword, {'attr': {'style': 'width:100%; padding:12px; border:1.5px solid #e5e7eb; border-radius:8px;'}}) }}
+            </div>
+
+            <button type="submit" style="width: 100%; background: var(--primary-color); color: white; border: none; padding: 14px; border-radius: 8px; font-size: 1.1rem; font-weight: bold; cursor: pointer;">
+                S'inscrire
+            </button>
+        {{ form_end(registrationForm) }}
+
+        <p style="margin-top: 25px; text-align: center; color: var(--text-muted);">
+            Déjà inscrit ? <a href="{{ path('app_login') }}" style="color: var(--primary-color); font-weight: bold; text-decoration: none;">Se connecter</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

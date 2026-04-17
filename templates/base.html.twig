@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>{% block title %}Sukigram — Le réseau social des animaux{% endblock %}</title>
+    
+        {% block stylesheets %}
+            <link rel="stylesheet" href="{{ asset('styles/app.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            {% if importmap is defined %}
+                {{ importmap('app') }}
+            {% endif %}
+        {% endblock %}
+    </head>
+    <body>
+        <nav style="display: flex; justify-content: space-between; align-items: center; padding: 15px 30px; background: #fff; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+            
+            {# Gauche #}
+            <a href="{{ path('app_home') }}" class="nav-logo" style="color: #7c3aed; font-weight: 800; font-size: 1.4rem; text-decoration: none;">
+                Sukigram <span style="height: 8px; width: 8px; background: #7c3aed; border-radius: 50%; display: inline-block;"></span>
+            </a>
+
+            {# Droite#}
+            <div class="nav-right">
+        {% if app.user %}
+            {# si connecté #}
+            <div class="menu-container">
+                <button class="menu-toggle" id="menuToggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <div class="menu-header">Bonjour, {{ app.user.username }} !</div>
+                    <a href="{{ path('app_profile', {username: app.user.username}) }}">👤 Mon Profil</a>
+                    <a href="{{ path('app_notifications') }}">
+                        🔔 Notifications 
+                        {% set unread = app.user.notifications|filter(n => not n.isRead)|length %}
+                        {% if unread > 0 %}<span class="badge">{{ unread }}</span>{% endif %}
+                    </a>
+                    <a href="{{ path('app_post_new') }}">✍️ Créer un Post</a>
+                    <a href="{{ path('app_post_feed') }}">🗞️ Mon Feed</a>
+                    <hr>
+                    <a href="{{ path('app_logout') }}" class="logout-link">🚪 Déconnexion</a>
+                </div>
+            </div>
+        {% else %}
+            {# si non connecté #}
+            <div class="nav-links">
+                <a href="{{ path('app_home') }}">Accueil</a>
+                <a href="{{ path('app_login') }}">Connexion</a>
+                <a href="{{ path('app_register') }}" class="btn-register">Inscription</a>
+            </div>
+        {% endif %}
+    </div>
+
+        </nav>
+
+
+        <div class="container">
+            {% for label, messages in app.flashes %}
+                {% for message in messages %}
+                    <div class="alert alert-{{ label == 'error' ? 'danger' : label }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endfor %}
+
+            {# Contenu des pages #}
+            {% block body %}{% endblock %}
+        </div>
+
+        <footer style="text-align: center; margin-top: 50px; padding: 30px; color: #6b7280; border-top: 1px solid #eee;">
+            <p>&copy; {{ "now"|date("Y") }} Sukigram — Évaluation Jour 2</p>
+        </footer>
+    </body>
+</html>

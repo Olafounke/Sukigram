@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil — Sukigram{% endblock %}
+
+{% block body %}
+    <h1 style="margin-bottom: 30px; color: var(--primary-dark);">Derniers posts</h1>
+
+    <div class="posts-wrapper">
+        {% for post in posts %}
+            {% include 'post/_post_card.html.twig' with {'post': post} %}
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Profil de {{ user.username }} — Sukigram{% endblock %}
+
+{% block body %}
+<div class="container" style="max-width: 700px;">
+
+  
+    <header class="profile-header" style="text-align: center; background: white; padding: 40px; border-radius: 20px; box-shadow: var(--shadow); margin-bottom: 30px; border-bottom: 5px solid var(--primary-color);">
+        
+        {# Avatar #}
+        <div style="margin-bottom: 20px;">
+            {% if user.avatarUrl %}
+                <img src="{{ user.avatarUrl }}" alt="Avatar" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 4px solid var(--primary-light);">
+            {% else %}
+                <div class="default-avatar" style="width: 120px; height: 120px; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; font-weight: 800; margin: 0 auto;">
+                    {{ user.username|first|upper }}
+                </div>
+            {% endif %}
+        </div>
+
+        <h1 style="margin: 0; color: var(--text-main);">@{{ user.username }}</h1>
+        
+        <p class="bio" style="margin: 15px 0; color: var(--text-muted); font-style: italic;">
+            {{ user.bio ?: "Cet utilisateur n'a pas encore de bio. 🐾" }}
+        </p>
+
+        
+        <div style="display: flex; justify-content: center; gap: 40px; margin-bottom: 20px;">
+            <div style="text-align: center;">
+                <div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-color); line-height: 1;">{{ user.followers|length }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-top: 5px;">Abonnés</div>
+            </div>
+            <div style="text-align: center;">
+                <div style="font-size: 1.6rem; font-weight: 800; color: var(--primary-color); line-height: 1;">{{ user.following|length }}</div>
+                <div style="font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; margin-top: 5px;">Abonnements</div>
+            </div>
+        </div>
+
+        <p><small style="color: var(--text-muted);">Membre depuis le {{ user.createdAt|date('d/m/Y') }}</small></p>
+
+
+        {% if app.user and app.user != user %}
+            <a href="{{ path('app_user_follow', {id: user.id}) }}" 
+               style="display: inline-block; margin-top: 10px; padding: 10px 30px; border-radius: 25px; text-decoration: none; font-weight: bold; transition: all 0.3s;
+                      background: {% if user.followers.contains(app.user) %}#f3f4f6{% else %}var(--primary-color){% endif %}; 
+                      color: {% if user.followers.contains(app.user) %}#374151{% else %}white{% endif %};">
+                {% if user.followers.contains(app.user) %}
+                    ❌ Se désabonner
+                {% else %}
+                    👤 S'abonner
+                {% endif %}
+            </a>
+        {% endif %}
+    </header>
+
+
+    <section class="user-posts">
+        <h2 style="margin-bottom: 20px; color: var(--primary-dark);">Publications ({{ user.posts|length }})</h2>
+
+        {% if user.posts is empty %}
+            <div style="text-align: center; padding: 40px; background: white; border-radius: 12px; color: var(--text-muted); box-shadow: var(--shadow);">
+                <p>Cet utilisateur n'a encore rien publié. 🐈‍⬛</p>
+            </div>
+        {% else %}
+            {% for post in user.posts|sort((a, b) => b.createdAt <=> a.createdAt) %}
+                {% include 'post/_post_card.html.twig' with {'post': post} %}
+            {% endfor %}
+        {% endif %}
+    </section>
+</div>
+{% endblock %}
