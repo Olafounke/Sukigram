@@ -1,50 +1,14 @@
 # Commentaires 
 Comme expliqué en cours aujourd'hui 17/04/2026, j'ai un problème avec mon openssl. Ce qui crée un crash de mon application du à l'environnement. Je n'ai donc pas pu débugger mon code du day 3 et m'assurer du bon fonctionnement de toutes les fonctionnalités et tests. 
 
+# Chronologie des branches
+Sur la branche dev, j'ai réalisé le day 1
+Sur la branche main, j'ai réalisé le day 2
+Sur la branche dev-day3, j'ai réalisé le day 3
+
 # Sukigram
 Mini app de réseau social des animaux
 
-# Évaluation Jour 1 — Fondations de SymfoConnect
-
-**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Mode :** Individuel ou binôme
-
----
-
-evaluation_jour1.md
-3 Ko
-Widad — Hier à 11:54
-Transféré
-# Évaluation Jour 2 — Fonctionnalités Sociales de SymfoConnect
-
-**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluation Jour 1 complétée
-
----
-
-evaluation_jour2.md
-3 Ko
-Widad — Hier à 16:31
-Transféré
-https://discord.gg/jsWVydqE
-MathBlock
-MathBlock
-18 en ligne
-83 membres
-depuis nov. 2024
-
-Aller sur le serveur
-Widad — Hier à 16:58
-faut signer
-Widad — 13:06
-Transféré
-# Évaluation Jour 3 — Finalisation de SymfoConnect
-
-**Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluations Jours 1 & 2 complétées
-
----
-
-evaluation_jour3.md
-4 Ko
-﻿
 # Évaluation Jour 3 — Finalisation de SymfoConnect
 
 **Durée :** 3h (14h00 – 17h00) | **Barème :** /20 | **Pré-requis :** Évaluations Jours 1 & 2 complétées
